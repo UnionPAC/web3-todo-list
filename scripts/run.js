@@ -20,6 +20,9 @@ const main = async () => {
 
   taskCount = await todoListContract.getTaskCount();
   console.log("We have %d tasks to complete!", taskCount.toNumber());
+
+  let allTasks = await todoListContract.getTasks();
+  console.log(allTasks);
 };
 
 const runMain = async () => {

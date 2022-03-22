@@ -8,8 +8,6 @@
 
 .App {
     font-family: 'Work Sans', sans-serif;
-    font-weight: bold;
-    background-color: rgb(131, 155, 231);
     display: flex;
     height: 100vh;
     flex-direction: column;
@@ -18,4 +16,28 @@
 
 h1 {
     margin-top: 50px;
+    font-weight: bold;
+}
+
+input {
+    width: 400px;
+    margin: 40px;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+input:focus {
+    outline: none;
+}
+
+button {
+    padding:  8px 15px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.95);
 }

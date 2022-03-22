@@ -7,6 +7,7 @@ import 'hardhat/console.sol';
 contract TodoList {
 
     uint taskCount;
+    event NewTask(uint id, string content, bool isCompleted);
 
     struct Task {
         uint id;
@@ -16,18 +17,18 @@ contract TodoList {
 
     Task[] tasks;
 
-    constructor() {
-        
-    }
-
     function getTaskCount() public view returns(uint) {
-        console.log("We have %d tasks to complete", taskCount);
         return taskCount;
     }
 
     function addTask(string memory _content) public {
         taskCount++;
         tasks.push(Task(taskCount, _content, false));
+        emit NewTask(taskCount, _content, false);
+    }
+
+    function getTasks() public view returns(Task[] memory) {
+        return tasks;
     }
 
 }
