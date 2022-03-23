@@ -19,7 +19,7 @@ li {
     padding: 12px 25px;
 }
 
-.check p {
+.checked {
     text-decoration: line-through;
 }
 
@@ -27,8 +27,8 @@ li:hover {
     cursor: pointer;
 }
 
-.fa-trash:hover, .fa-pen-to-square:hover {
-    transform: scale(1.1);
+.fa-trash:hover, .fa-check:hover {
+    transform: scale(1.13);
 }
 
 

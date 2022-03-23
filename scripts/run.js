@@ -9,7 +9,6 @@ const main = async () => {
   await todoListContract.deployed();
 
   console.log("Contract deployed to:", todoListContract.address);
-  console.log("Contract deployed by:", owner.address);
 
   // Print initial task count
   let taskCount;
@@ -23,12 +22,18 @@ const main = async () => {
   addTask = await todoListContract.addTask("read a bit");
   await addTask.wait();
 
-  // Update first item in the array (get groceries => play guitar)
-  let updateTask = await todoListContract.updateTask(0, "");
-  await updateTask.wait();
-
-  // Print out final array values
+  // Show Array of Tasks
   let allTasks = await todoListContract.getTasks();
+  console.log(allTasks);
+
+  // Complete (isCompleted => true) task #1
+  let updateTask = await todoListContract.updateTask(1);
+  console.log("Mining...", updateTask.hash);
+  await updateTask.wait();
+  console.log("Mined:", updateTask.hash);
+
+  // Show Array of Tasks (after update)
+  allTasks = await todoListContract.getTasks();
   console.log(allTasks);
 };
 
