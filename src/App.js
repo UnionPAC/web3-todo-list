@@ -6,7 +6,7 @@ import "./App.css";
 const App = () => {
   const [taskCount, setTaskCount] = useState("");
   const [allTasks, setAllTasks] = useState([]);
-  const contractAddress = "0xF6db397d0FDedE8c11dfb3af7621e90Ab75fc158";
+  const contractAddress = "0xCDd5D9f285af538bA157374C8d673a0B93496E96";
 
   const addTask = async () => {
     try {
@@ -40,8 +40,7 @@ const App = () => {
           taskCount.toString()
         );
 
-        const tasks = await TodoListContract.getTasks();
-        console.log(tasks);
+        getAllTasks();
       }
     } catch (error) {
       console.log(error);
@@ -79,6 +78,35 @@ const App = () => {
     }
   };
 
+  const renderTaskList = () => {
+    return (
+      <div className="task-list">
+        <ul>
+          {allTasks.map((task, index) => {
+            return (
+              <li key={index} id={`task-${task.id}`}>
+                <p className="task-content" id={`taskContent-${task.id}`}>{task.content}</p>
+                <div
+                  className="controls"
+                  style={{ marginLeft: "10px", padding: "10px" }}
+                >
+                  <i
+                    className="fa-solid fa-pen-to-square"
+                    style={{ marginLeft: "30px" }}
+                  />
+                  <i
+                    className="fa-solid fa-trash"
+                    style={{ marginLeft: "30px" }}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
+
   useEffect(() => {
     getAllTasks();
   }, []);
@@ -86,12 +114,17 @@ const App = () => {
   return (
     <div className="App">
       <h1>To-do List</h1>
-      <input id="inputVal" type="text" placeholder="Enter task here..." />
+      <input
+        className="inputVal"
+        id="inputVal"
+        type="text"
+        placeholder="Enter task here..."
+      />
       <button onClick={addTask}>+ Add Task</button>
       <p
         style={{ padding: "40px 10px", fontStyle: "italic" }}
       >{`There are ${taskCount} tasks to finish!`}</p>
-      
+      {renderTaskList()}
     </div>
   );
 };

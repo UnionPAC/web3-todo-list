@@ -6,6 +6,32 @@
     box-sizing: border-box;
 }
 
+ul {
+    list-style-type: none;
+}
+
+li {
+    background-color: antiquewhite;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+    padding: 12px 25px;
+}
+
+.check p {
+    text-decoration: line-through;
+}
+
+li:hover {
+    cursor: pointer;
+}
+
+.fa-trash:hover, .fa-pen-to-square:hover {
+    transform: scale(1.1);
+}
+
+
 .App {
     font-family: 'Work Sans', sans-serif;
     display: flex;
@@ -19,7 +45,7 @@ h1 {
     font-weight: bold;
 }
 
-input {
+.inputVal {
     width: 400px;
     margin: 40px;
     padding: 10px;
