@@ -11,16 +11,23 @@ const main = async () => {
   console.log("Contract deployed to:", todoListContract.address);
   console.log("Contract deployed by:", owner.address);
 
+  // Print initial task count
   let taskCount;
   taskCount = await todoListContract.getTaskCount();
   console.log("We have %d tasks to complete!", taskCount.toNumber());
 
-  let taskTx = await todoListContract.addTask("a");
-  await taskTx.wait();
+  // Create 2 tasks
+  let addTask = await todoListContract.addTask("get groceries");
+  await addTask.wait();
 
-  taskCount = await todoListContract.getTaskCount();
-  console.log("We have %d tasks to complete!", taskCount.toNumber());
+  addTask = await todoListContract.addTask("read a bit");
+  await addTask.wait();
 
+  // Update first item in the array (get groceries => play guitar)
+  let updateTask = await todoListContract.updateTask(0, "");
+  await updateTask.wait();
+
+  // Print out final array values
   let allTasks = await todoListContract.getTasks();
   console.log(allTasks);
 };

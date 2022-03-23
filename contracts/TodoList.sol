@@ -28,11 +28,15 @@ contract TodoList {
         emit NewTask(taskCount, _content, false);
     }
 
-    function updateTask(string memory _content) public {
+    function updateTask(uint _id, string memory _content) public {
+        require((keccak256(abi.encodePacked(_content)) != keccak256(abi.encodePacked(""))), "Task cannot be empty");
+        tasks[_id].content = _content;
     }
 
     function deleteTask(uint _id) public {
-        delete tasks[_id];
+        tasks[_id] = tasks[tasks.length - 1];
+        tasks.pop();
+        taskCount--;
     }
 
     function getTasks() public view returns(Task[] memory) {
