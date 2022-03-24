@@ -5,7 +5,7 @@ import loading from "../src/img/loading.gif";
 import "./App.css";
 
 const App = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
+  const [currentAccount, setCurrentAccount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [taskCount, setTaskCount] = useState();
   const [allTasks, setAllTasks] = useState([]);
@@ -18,8 +18,9 @@ const App = () => {
       const { ethereum } = window;
       if (!ethereum) {
         console.log("Please install MetaMask!");
+        return;
       } else {
-        console.log("Got the Ethereum Object ✅");
+        console.log("Got the Ethereum Object ✅", ethereum);
       }
 
       const accounts = await ethereum.request({ method: "eth_accounts" });
@@ -42,14 +43,13 @@ const App = () => {
       const { ethereum } = window;
       if (!ethereum) {
         alert("Please install MetaMask!");
+        return;
       }
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
       console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
-      getAllTasks();
     } catch (error) {
       console.log(error);
     }
@@ -267,13 +267,11 @@ const App = () => {
 
   useEffect(() => {
     checkIfWalletConnected();
-    getAllTasks();
   }, []);
 
   return (
     <div className="App">
       <h1>To-do List</h1>
-      {currentAccount ? loggedInUser() : loggedOutUI()}
     </div>
   );
 };
