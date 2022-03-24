@@ -1,15 +1,14 @@
-# Basic Sample Hardhat Project
+# To-do List App built w/ Web3 🦄
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+(Demo Link)[]
 
-Try running some of the following tasks:
+In my journey to learn more about building dApps I decided to do a basic To-do list App
+in order to ensure basic CRUD functionality.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+- You can view your to-do list
+- You can add a to-do item
+- Complete item (update)
+- And finally you can delete a to-do list item
+
+
+This project is build w/ React & Hardhat and is deployed on the Rinkeby Testnet
