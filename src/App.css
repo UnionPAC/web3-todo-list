@@ -1,69 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 ul {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 li {
-    background-color: antiquewhite;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 10px;
-    padding: 12px 25px;
+  background-color: antiquewhite;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+  padding: 12px 25px;
 }
 
 .checked {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 li:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-.fa-trash:hover, .fa-check:hover {
-    transform: scale(1.13);
+.fa-trash:hover,
+.fa-check:hover {
+  transform: scale(1.13);
 }
-
 
 .App {
-    font-family: 'Work Sans', sans-serif;
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
-    align-items: center;
+  font-family: "Work Sans", sans-serif;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
-    margin-top: 50px;
-    font-weight: bold;
+  margin-top: 50px;
+  font-weight: bold;
 }
 
 .inputVal {
-    width: 400px;
-    margin: 40px;
-    padding: 10px;
-    border: none;
-    border-bottom: 1px solid black;
+  width: 400px;
+  margin: 40px;
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid black;
 }
 
 input:focus {
-    outline: none;
+  outline: none;
 }
 
 button {
-    padding:  8px 15px;
-    margin: 5px;
-    border: none;
-    cursor: pointer;
+  padding: 8px 15px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
 }
 
 button:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
+}
+
+.connect-btn {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+  border: 3px solid;
+  box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px,
+    5px 5px 0px 0px;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  background-color: #fee140;
+  background-image: linear-gradient(90deg, #fee140 0%, #fa709a 100%);
+  width: 200px;
+  height: 50px;
+}
+
+.connect-btn:active {
+  box-shadow: 0px 0px 0px 0px;
+  top: 5px;
+  left: 5px;
+}
+
+@media (min-width: 768px) {
+  .connect-btn {
+    padding: 0.25em 0.75em;
+  }
 }

@@ -1,15 +1,81 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { ethers } from "ethers";
-import abi from "../src/artifacts/contracts/TodoList.sol/TodoList.json";
+import abi from "./artifacts/contracts/TodoList.sol/TodoList.json";
 import loading from "../src/img/loading.gif";
 import "./App.css";
 
 const App = () => {
+  const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [taskCount, setTaskCount] = useState("");
+  const [taskCount, setTaskCount] = useState();
   const [allTasks, setAllTasks] = useState([]);
   const completedItems = document.getElementsByClassName("checked").length;
-  const contractAddress = "0xe812579A49E6d6B3eE8b27bB27D85b6625390501";
+  const contractAddress = "0x3f00Adf7aE7A96a43004f0047bCF84d0247a83f8";
+
+  // Check if user is connected
+  const checkIfWalletConnected = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        console.log("Please install MetaMask!");
+      } else {
+        console.log("Got the Ethereum Object ✅");
+      }
+
+      const accounts = await ethereum.request({ method: "eth_accounts" });
+
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Found an authorized account ✅", account);
+        setCurrentAccount(account);
+      } else {
+        console.log("No Authorized Account");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Connect Wallet
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Please install MetaMask!");
+      }
+
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+      getAllTasks();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Get Task Count
+  const getTaskCount = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const TodoListContract = new ethers.Contract(
+          contractAddress,
+          abi.abi,
+          signer
+        );
+
+        let taskCount = await TodoListContract.getTaskCount();
+        setTaskCount(taskCount.toNumber());
+        console.log(taskCount.toNumber());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Add Task
   const addTask = async () => {
@@ -24,12 +90,6 @@ const App = () => {
           signer
         );
 
-        let taskCount = await TodoListContract.getTaskCount();
-        console.log(
-          "There are %s tasks that need to be done!",
-          taskCount.toString()
-        );
-
         let inputVal = document.getElementById("inputVal");
         const taskTx = await TodoListContract.addTask(inputVal.value);
         inputVal.value = "";
@@ -39,21 +99,15 @@ const App = () => {
         setIsLoading(false);
         console.log("Mined:", taskTx.hash);
 
-        taskCount = await TodoListContract.getTaskCount();
-        setTaskCount(taskCount);
-        console.log(
-          "There are %s tasks that need to be done!",
-          taskCount.toString()
-        );
-
         getAllTasks();
+        getTaskCount();
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Get All Tasks
+  // Get Task List
   const getAllTasks = async () => {
     try {
       const { ethereum } = window;
@@ -72,7 +126,6 @@ const App = () => {
         let tasksArr = [];
         tasks.forEach((task) => {
           tasksArr.push({
-            id: task.id.toNumber(),
             content: task.content,
             isCompleted: task.isCompleted,
           });
@@ -81,7 +134,7 @@ const App = () => {
         setIsLoading(false);
         console.log(tasksArr);
         setAllTasks(tasksArr);
-        setTaskCount(tasksArr.length);
+        getTaskCount();
       }
     } catch (error) {
       console.log(error);
@@ -89,7 +142,7 @@ const App = () => {
   };
 
   // Update Task
-  const updateTask = async (id) => {
+  const updateTask = async (index) => {
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -100,7 +153,7 @@ const App = () => {
           abi.abi,
           signer
         );
-        let tx = await TodoListContract.updateTask(id);
+        let tx = await TodoListContract.updateTask(index);
         setIsLoading(true);
         console.log("Mining...", tx.hash);
         await tx.wait();
@@ -109,7 +162,8 @@ const App = () => {
 
         let allTasks = await TodoListContract.getTasks();
         console.log(allTasks);
-        setTaskCount(taskCount - 1);
+        setAllTasks(allTasks);
+        getTaskCount();
       }
     } catch (error) {
       console.log(error);
@@ -117,7 +171,7 @@ const App = () => {
   };
 
   // Delete Task
-  const deleteTask = async (id) => {
+  const deleteTask = async (index) => {
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -128,13 +182,17 @@ const App = () => {
           abi.abi,
           signer
         );
-        let tx = await TodoListContract.deleteTask(id);
+        let deleteTask = await TodoListContract.deleteTask(index);
         setIsLoading(true);
-        console.log("Mining...", tx.hash);
-        await tx.wait();
+        console.log("Mining...", deleteTask.hash);
+        await deleteTask.wait();
         setIsLoading(false);
-        console.log("Mined", tx.hash);
-        getAllTasks();
+        console.log("Mined --", deleteTask.hash);
+
+        let allTasks = await TodoListContract.getTasks();
+        console.log(allTasks);
+        setAllTasks(allTasks);
+        getTaskCount();
       }
     } catch (error) {
       console.log(error);
@@ -147,7 +205,7 @@ const App = () => {
         <ul>
           {allTasks.map((task, index) => {
             return (
-              <li key={index} id={`task-${task.id}`}>
+              <li key={index} id={`task-${index + 1}`}>
                 <p className={task.isCompleted === true ? "checked" : null}>
                   {task.content}
                 </p>
@@ -158,12 +216,16 @@ const App = () => {
                   <i
                     className="fa-solid fa-check"
                     style={{ marginLeft: "30px" }}
-                    onClick={() => updateTask(task.id)}
+                    onClick={() => {
+                      updateTask(index);
+                    }}
                   />
                   <i
                     className="fa-solid fa-trash"
                     style={{ marginLeft: "30px" }}
-                    onClick={() => deleteTask(task.id)}
+                    onClick={() => {
+                      deleteTask(index);
+                    }}
                   />
                 </div>
               </li>
@@ -174,13 +236,18 @@ const App = () => {
     );
   };
 
-  useEffect(() => {
-    getAllTasks();
-  }, []);
+  const loggedOutUI = () => (
+    <button
+      style={{ marginTop: "30px" }}
+      className="connect-btn"
+      onClick={connectWallet}
+    >
+      Connect Wallet
+    </button>
+  );
 
-  return (
-    <div className="App">
-      <h1>To-do List</h1>
+  const loggedInUser = () => (
+    <Fragment>
       <input
         className="inputVal"
         id="inputVal"
@@ -188,13 +255,25 @@ const App = () => {
         placeholder="Enter task here..."
       />
       <button onClick={addTask}>+ Add Task</button>
-      <p style={{ padding: "40px 10px", fontStyle: "italic" }}>
-        {`There are ${taskCount - completedItems} tasks to finish!`}
-      </p>
+      <p
+        style={{ padding: "40px 10px 20px", fontStyle: "italic" }}
+      >{`There are ${taskCount - completedItems} tasks to complete!`}</p>
       {isLoading && (
         <img style={{ marginTop: "30px" }} src={loading} width="200px" />
       )}
-      {!isLoading && renderTaskList()}
+      {renderTaskList()}
+    </Fragment>
+  );
+
+  useEffect(() => {
+    checkIfWalletConnected();
+    getAllTasks();
+  }, []);
+
+  return (
+    <div className="App">
+      <h1>To-do List</h1>
+      {currentAccount ? loggedInUser() : loggedOutUI()}
     </div>
   );
 };

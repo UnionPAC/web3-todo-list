@@ -10,31 +10,28 @@ const main = async () => {
 
   console.log("Contract deployed to:", todoListContract.address);
 
-  // Print initial task count
-  let taskCount;
-  taskCount = await todoListContract.getTaskCount();
-  console.log("We have %d tasks to complete!", taskCount.toNumber());
+  // Print Task Count = 0
+  let taskCount = await todoListContract.getTaskCount();
+  console.log(taskCount.toString());
 
-  // Create 2 tasks
-  let addTask = await todoListContract.addTask("get groceries");
+  // Add 3 Tasks
+  let addTask = await todoListContract.addTask('Get groceries');
   await addTask.wait();
 
-  addTask = await todoListContract.addTask("read a bit");
+  addTask = await todoListContract.addTask('Walk the dog');
   await addTask.wait();
 
-  // Show Array of Tasks
+  addTask = await todoListContract.addTask('Go climbing @ 4pm');
+  await addTask.wait();
+
+  // Delete Task 'Walk the dog'
+  let deleteTask = await todoListContract.deleteTask(2);
+  await deleteTask.wait();
+
+  // Print Final Array
   let allTasks = await todoListContract.getTasks();
   console.log(allTasks);
 
-  // Complete (isCompleted => true) task #1
-  let updateTask = await todoListContract.updateTask(1);
-  console.log("Mining...", updateTask.hash);
-  await updateTask.wait();
-  console.log("Mined:", updateTask.hash);
-
-  // Show Array of Tasks (after update)
-  allTasks = await todoListContract.getTasks();
-  console.log(allTasks);
 };
 
 const runMain = async () => {
