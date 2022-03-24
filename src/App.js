@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { ethers } from "ethers";
-import abi from "./artifacts/contracts/TodoList.sol/TodoList.json";
+import abi from "../src/util/TodoList.json";
 import loading from "../src/img/loading.gif";
 import "./App.css";
 
