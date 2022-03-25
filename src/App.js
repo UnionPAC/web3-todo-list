@@ -28,6 +28,7 @@ const App = () => {
         const account = accounts[0];
         console.log("Found an authorized account ✅", account);
         setCurrentAccount(account);
+        getAllTasks();
       } else {
         console.log("No Authorized Account");
       }
@@ -50,6 +51,7 @@ const App = () => {
       });
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
+      getAllTasks();
     } catch (error) {
       console.log(error);
     }
@@ -239,7 +241,7 @@ const App = () => {
 
   useEffect(() => {
     checkIfWalletConnected();
-    getAllTasks();
+    
   }, []);
 
   return (
