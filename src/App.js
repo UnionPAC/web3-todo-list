@@ -70,8 +70,9 @@ const App = () => {
           signer
         );
 
-        setIsLoading(true);
+        
         const tasks = await TodoListContract.getTasks();
+        setIsLoading(true);
 
         let tasksArr = [];
         tasks.forEach((task) => {
