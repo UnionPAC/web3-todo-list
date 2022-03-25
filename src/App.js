@@ -1,16 +1,15 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { ethers } from "ethers";
-import abi from "../src/util/TodoList.json";
-import loading from "../src/img/loading.gif";
+import loading from "./img/loading.gif";
+import util from "./util/TodoList.json";
 import "./App.css";
 
 const App = () => {
-  const [currentAccount, setCurrentAccount] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [taskCount, setTaskCount] = useState();
+  const [taskCount, setTaskCount] = useState("");
+  const [currentAccount, setCurrentAccount] = useState("");
   const [allTasks, setAllTasks] = useState([]);
-  const completedItems = document.getElementsByClassName("checked").length;
-  const contractAddress = "0x3f00Adf7aE7A96a43004f0047bCF84d0247a83f8";
+  const [isLoading, setIsLoading] = useState(false);
+  const contractAddress = "0x3abE2BC7f622946E1827b2448575b31CdCf465D3";
 
   // Check if user is connected
   const checkIfWalletConnected = async () => {
@@ -50,58 +49,7 @@ const App = () => {
         method: "eth_requestAccounts",
       });
       console.log("Connected", accounts[0]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Get Task Count
-  const getTaskCount = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const TodoListContract = new ethers.Contract(
-          contractAddress,
-          abi.abi,
-          signer
-        );
-
-        let taskCount = await TodoListContract.getTaskCount();
-        setTaskCount(taskCount.toNumber());
-        console.log(taskCount.toNumber());
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Add Task
-  const addTask = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const TodoListContract = new ethers.Contract(
-          contractAddress,
-          abi.abi,
-          signer
-        );
-
-        let inputVal = document.getElementById("inputVal");
-        const taskTx = await TodoListContract.addTask(inputVal.value);
-        inputVal.value = "";
-        setIsLoading(true);
-        console.log("Mining...", taskTx.hash);
-        await taskTx.wait();
-        setIsLoading(false);
-        console.log("Mined:", taskTx.hash);
-
-        getAllTasks();
-        getTaskCount();
-      }
+      setCurrentAccount(accounts[0]);
     } catch (error) {
       console.log(error);
     }
@@ -116,7 +64,7 @@ const App = () => {
         const signer = provider.getSigner();
         const TodoListContract = new ethers.Contract(
           contractAddress,
-          abi.abi,
+          util.abi,
           signer
         );
 
@@ -134,7 +82,41 @@ const App = () => {
         setIsLoading(false);
         console.log(tasksArr);
         setAllTasks(tasksArr);
-        getTaskCount();
+        
+        // Get Task Count
+        const taskCount = await TodoListContract.getTaskCount();
+        const completedTasks = document.getElementsByClassName("checked").length;
+        console.log(taskCount.toNumber());
+        setTaskCount(taskCount.toNumber() - completedTasks);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Add Task
+  const addTask = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const TodoListContract = new ethers.Contract(
+          contractAddress,
+          util.abi,
+          signer
+        );
+
+        let inputVal = document.getElementById("inputVal");
+        const taskTx = await TodoListContract.addTask(inputVal.value);
+        inputVal.value = "";
+        setIsLoading(true);
+        console.log("Mining...", taskTx.hash);
+        await taskTx.wait();
+        setIsLoading(false);
+        console.log("Mined:", taskTx.hash);
+
+        getAllTasks();
       }
     } catch (error) {
       console.log(error);
@@ -150,7 +132,7 @@ const App = () => {
         const signer = provider.getSigner();
         const TodoListContract = new ethers.Contract(
           contractAddress,
-          abi.abi,
+          util.abi,
           signer
         );
         let tx = await TodoListContract.updateTask(index);
@@ -160,10 +142,7 @@ const App = () => {
         setIsLoading(false);
         console.log("Mined", tx.hash);
 
-        let allTasks = await TodoListContract.getTasks();
-        console.log(allTasks);
-        setAllTasks(allTasks);
-        getTaskCount();
+        getAllTasks();
       }
     } catch (error) {
       console.log(error);
@@ -179,7 +158,7 @@ const App = () => {
         const signer = provider.getSigner();
         const TodoListContract = new ethers.Contract(
           contractAddress,
-          abi.abi,
+          util.abi,
           signer
         );
         let deleteTask = await TodoListContract.deleteTask(index);
@@ -189,51 +168,11 @@ const App = () => {
         setIsLoading(false);
         console.log("Mined --", deleteTask.hash);
 
-        let allTasks = await TodoListContract.getTasks();
-        console.log(allTasks);
-        setAllTasks(allTasks);
-        getTaskCount();
+        getAllTasks();
       }
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const renderTaskList = () => {
-    return (
-      <div className="task-list">
-        <ul>
-          {allTasks.map((task, index) => {
-            return (
-              <li key={index} id={`task-${index + 1}`}>
-                <p className={task.isCompleted === true ? "checked" : null}>
-                  {task.content}
-                </p>
-                <div
-                  className="controls"
-                  style={{ marginLeft: "10px", padding: "10px" }}
-                >
-                  <i
-                    className="fa-solid fa-check"
-                    style={{ marginLeft: "30px" }}
-                    onClick={() => {
-                      updateTask(index);
-                    }}
-                  />
-                  <i
-                    className="fa-solid fa-trash"
-                    style={{ marginLeft: "30px" }}
-                    onClick={() => {
-                      deleteTask(index);
-                    }}
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
   };
 
   const loggedOutUI = () => (
@@ -246,7 +185,7 @@ const App = () => {
     </button>
   );
 
-  const loggedInUser = () => (
+  const loggedInUI = () => (
     <Fragment>
       <input
         className="inputVal"
@@ -257,21 +196,56 @@ const App = () => {
       <button onClick={addTask}>+ Add Task</button>
       <p
         style={{ padding: "40px 10px 20px", fontStyle: "italic" }}
-      >{`There are ${taskCount - completedItems} tasks to complete!`}</p>
+      >{`There are ${taskCount} tasks to complete!`}</p>
       {isLoading && (
         <img style={{ marginTop: "30px" }} src={loading} width="200px" />
       )}
-      {renderTaskList()}
+      {!isLoading && (
+        <div className="task-list">
+          <ul>
+            {allTasks.map((task, index) => {
+              return (
+                <li key={index} id={`task-${index + 1}`}>
+                  <p className={task.isCompleted === true ? "checked" : null}>
+                    {task.content}
+                  </p>
+                  <div
+                    className="controls"
+                    style={{ marginLeft: "10px", padding: "10px" }}
+                  >
+                    <i
+                      className="fa-solid fa-check"
+                      style={{ marginLeft: "30px" }}
+                      onClick={() => {
+                        updateTask(index);
+                      }}
+                    />
+                    <i
+                      className="fa-solid fa-trash"
+                      style={{ marginLeft: "30px" }}
+                      onClick={() => {
+                        deleteTask(index);
+                      }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </Fragment>
   );
 
   useEffect(() => {
     checkIfWalletConnected();
+    getAllTasks();
   }, []);
 
   return (
     <div className="App">
       <h1>To-do List</h1>
+      {currentAccount ? loggedInUI() : loggedOutUI()}
     </div>
   );
 };
