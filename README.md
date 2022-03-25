@@ -1,6 +1,6 @@
 # To-do List App built w/ Web3 🦄
 
-[Demo Link][https://web3-todo-list-3mmz3wl58-unionpac.vercel.app/]
+[Demo Link](https://web3-todo-list-3mmz3wl58-unionpac.vercel.app/)
 
 In my journey to learn more about building dApps I decided to do a basic To-do list App
 in order to ensure basic CRUD functionality.
